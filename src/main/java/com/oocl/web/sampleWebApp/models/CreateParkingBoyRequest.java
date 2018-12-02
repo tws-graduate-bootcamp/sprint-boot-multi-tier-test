@@ -18,6 +18,6 @@ public class CreateParkingBoyRequest {
     }
 
     public boolean isValid() {
-        return employeeId != null;
+        return employeeId != null && !employeeId.isEmpty();
     }
 }

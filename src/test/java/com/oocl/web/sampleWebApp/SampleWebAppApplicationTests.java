@@ -98,4 +98,12 @@ public class SampleWebAppApplicationTests {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void should_get_400_if_employee_id_is_empty_string() throws Exception {
+        mvc.perform(post("/parkingboys")
+            .content("{\"employeeId\": \"\"}")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }
