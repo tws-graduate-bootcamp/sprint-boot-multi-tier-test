@@ -4,7 +4,6 @@ import com.oocl.web.sampleWebApp.domain.ParkingBoy;
 import com.oocl.web.sampleWebApp.domain.ParkingBoyRepository;
 import com.oocl.web.sampleWebApp.models.CreateParkingBoyRequest;
 import com.oocl.web.sampleWebApp.models.ParkingBoyResponse;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
