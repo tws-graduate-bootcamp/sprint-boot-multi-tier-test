@@ -14,4 +14,8 @@ public class AssociateParkingBoyParkingLotRequest {
         request.parkingLotId = parkingLotId;
         return request;
     }
+
+    public boolean isValid() {
+        return parkingLotId != null;
+    }
 }
