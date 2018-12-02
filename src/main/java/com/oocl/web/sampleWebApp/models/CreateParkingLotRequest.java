@@ -20,6 +20,6 @@ public class CreateParkingLotRequest {
     }
 
     public boolean isValid() {
-        return parkingLotId != null;
+        return parkingLotId != null && capacity > 0;
     }
 }
