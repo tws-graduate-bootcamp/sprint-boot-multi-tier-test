@@ -4,7 +4,9 @@ import com.oocl.web.sampleWebApp.domain.ParkingBoy;
 import com.oocl.web.sampleWebApp.domain.ParkingBoyRepository;
 import com.oocl.web.sampleWebApp.models.CreateParkingBoyRequest;
 import com.oocl.web.sampleWebApp.models.ParkingBoyResponse;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +32,12 @@ public class ParkingBoyResource {
         if (!request.isValid()) {
             return ResponseEntity.badRequest().build();
         }
-        parkingBoyRepository.saveAndFlush(new ParkingBoy(request.getEmployeeId()));
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+
+        try {
+            parkingBoyRepository.saveAndFlush(new ParkingBoy(request.getEmployeeId()));
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (DataIntegrityViolationException error) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

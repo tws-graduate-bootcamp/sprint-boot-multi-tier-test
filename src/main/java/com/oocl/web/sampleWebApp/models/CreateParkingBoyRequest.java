@@ -11,10 +11,11 @@ public class CreateParkingBoyRequest {
     }
 
     public static CreateParkingBoyRequest create(String employeeId) {
-        Objects.requireNonNull(employeeId);
-
         final CreateParkingBoyRequest request = new CreateParkingBoyRequest();
         request.employeeId = employeeId;
+        if (!request.isValid()) {
+            throw new IllegalArgumentException("employeeId:" + employeeId);
+        }
         return request;
     }
 

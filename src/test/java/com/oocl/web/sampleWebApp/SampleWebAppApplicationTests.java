@@ -1,5 +1,6 @@
 package com.oocl.web.sampleWebApp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.oocl.web.sampleWebApp.domain.ParkingBoy;
 import com.oocl.web.sampleWebApp.domain.ParkingBoyRepository;
 import com.oocl.web.sampleWebApp.models.CreateParkingBoyRequest;
@@ -113,6 +114,21 @@ public class SampleWebAppApplicationTests {
 
         mvc.perform(post("/parkingboys")
             .content(String.format("{\"employeeId\": \"%s\"}", longEmployeeId))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void should_get_400_if_employee_id_conflicts() throws Exception {
+        final String duplicatedId = "employee-01";
+
+        mvc.perform(post("/parkingboys")
+            .content(toJsonString(CreateParkingBoyRequest.create(duplicatedId)))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
+
+        mvc.perform(post("/parkingboys")
+            .content(toJsonString(CreateParkingBoyRequest.create(duplicatedId)))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
