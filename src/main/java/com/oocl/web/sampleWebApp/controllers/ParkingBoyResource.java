@@ -70,6 +70,10 @@ public class ParkingBoyResource {
             return ResponseEntity.badRequest().build();
         }
         final ParkingBoy parkingBoy = parkingBoyRepository.findOneByEmployeeId(employeeId);
+        if (parkingBoy == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         final ParkingLot parkingLot = parkingLotRepository.findOneByParkingLotId(request.getParkingLotId());
         parkingLot.setParkingBoy(parkingBoy);
         parkingLotRepository.saveAndFlush(parkingLot);

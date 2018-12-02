@@ -1,5 +1,6 @@
 package com.oocl.web.sampleWebApp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.oocl.web.sampleWebApp.domain.ParkingBoy;
 import com.oocl.web.sampleWebApp.domain.ParkingBoyRepository;
 import com.oocl.web.sampleWebApp.domain.ParkingLot;
@@ -216,6 +217,21 @@ public class ParkingBoyResourceTests {
 
         // When
         mvc.perform(post("/parkingboys/e01/parkinglots"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void should_get_400_if_parking_boy_does_not_exist() throws Exception {
+        // Given
+        final ParkingBoy employee = new ParkingBoy("e01");
+        final ParkingLot p01 = new ParkingLot("p01", 2);
+        entityManager.persist(employee);
+        entityManager.persist(p01);
+        AssociateParkingBoyParkingLotRequest request = AssociateParkingBoyParkingLotRequest.create("p01");
+
+        // When
+        mvc.perform(post("/parkingboys/e02/parkinglots")
+            .content(toJsonString(request)).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
 }
