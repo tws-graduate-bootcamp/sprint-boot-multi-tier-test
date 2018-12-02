@@ -1,12 +1,13 @@
 package com.oocl.web.sampleWebApp.controllers;
 
+import com.oocl.web.sampleWebApp.domain.ParkingLot;
 import com.oocl.web.sampleWebApp.domain.ParkingLotRepository;
+import com.oocl.web.sampleWebApp.models.CreateParkingLotRequest;
 import com.oocl.web.sampleWebApp.models.ParkingLotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,5 +26,12 @@ public class ParkingLotResource {
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(allParkingLots);
+    }
+
+    @PostMapping
+    public ResponseEntity create(@RequestBody CreateParkingLotRequest request) {
+        final ParkingLot parkingLot = new ParkingLot(request.getParkingLotId(), request.getCapacity());
+        parkingLotRepository.saveAndFlush(parkingLot);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
