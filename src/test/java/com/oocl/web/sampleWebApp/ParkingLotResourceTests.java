@@ -104,6 +104,26 @@ public class ParkingLotResourceTests {
     }
 
     @Test
+    public void should_get_400_if_parking_lot_id_empty_string() throws Exception {
+        mvc.perform(
+            post("/parkinglots")
+                .content("{\"capacity\":10, \"parkingLotId\":\"\"}")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void should_get_400_if_parking_lot_id_is_too_long() throws Exception {
+        final String longId = "0123456789012345678901234567890123456789012345678901234567890123456789";
+
+        mvc.perform(
+            post("/parkinglots")
+                .content(String.format("{\"capacity\":10, \"parkingLotId\":\"%s\"}", longId))
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void should_get_400_if_parking_lot_capacity_is_not_provided() throws Exception {
         mvc.perform(
             post("/parkinglots")
