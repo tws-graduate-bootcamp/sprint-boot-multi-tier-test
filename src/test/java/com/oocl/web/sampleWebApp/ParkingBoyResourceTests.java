@@ -2,8 +2,11 @@ package com.oocl.web.sampleWebApp;
 
 import com.oocl.web.sampleWebApp.domain.ParkingBoy;
 import com.oocl.web.sampleWebApp.domain.ParkingBoyRepository;
+import com.oocl.web.sampleWebApp.domain.ParkingLot;
 import com.oocl.web.sampleWebApp.models.CreateParkingBoyRequest;
 import com.oocl.web.sampleWebApp.models.ParkingBoyResponse;
+import com.oocl.web.sampleWebApp.models.ParkingBoyWithParkingLotResponse;
+import com.oocl.web.sampleWebApp.models.ParkingLotResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +17,16 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+
+import java.util.List;
 
 import static com.oocl.web.sampleWebApp.WebTestUtil.getContentAsObject;
 import static com.oocl.web.sampleWebApp.WebTestUtil.toJsonString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ParkingBoyResourceTests {
     @Autowired
@@ -132,5 +140,37 @@ public class ParkingBoyResourceTests {
             .content(toJsonString(CreateParkingBoyRequest.create(duplicatedId)))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void should_get_parking_boy_with_parking_lots() throws Exception {
+	    // Given
+        final ParkingBoy employee = new ParkingBoy("e01");
+        final ParkingLot p01 = new ParkingLot("p01", 2);
+        p01.setParkingBoy(employee);
+        final ParkingLot p02 = new ParkingLot("p02", 3);
+        p02.setParkingBoy(employee);
+        entityManager.persist(p01);
+        entityManager.persist(p02);
+        entityManager.flush();
+
+        // When
+        final MvcResult result = mvc.perform(get("/parkingboys/e01"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        final ParkingBoyWithParkingLotResponse response = getContentAsObject(
+            result, ParkingBoyWithParkingLotResponse.class);
+        assertEquals("e01", response.getEmployeeId());
+        List<ParkingLotResponse> parkingLots = response.getParkingLots();
+        assertEquals(2, parkingLots.size());
+        assertTrue(parkingLots.stream().anyMatch(pl -> pl.getParkingLotId().equals("p01")));
+        assertTrue(parkingLots.stream().anyMatch(pl -> pl.getParkingLotId().equals("p02")));
+    }
+
+    @Test
+    public void should_get_404_when_parking_boy_not_exist_when_get_parking_boy_with_parking_lots() throws Exception {
+        mvc.perform(get("/parkingboys/not-exist-id"))
+            .andExpect(status().isNotFound());
     }
 }

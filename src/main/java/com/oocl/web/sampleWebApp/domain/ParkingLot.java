@@ -1,7 +1,5 @@
 package com.oocl.web.sampleWebApp.domain;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import javax.persistence.*;
 
 @Entity
@@ -16,6 +14,10 @@ public class ParkingLot {
 
     private Integer capacity;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "parking_boy_id")
+    private ParkingBoy parkingBoy;
+
     public Long getId() {
         return id;
     }
@@ -26,6 +28,14 @@ public class ParkingLot {
 
     public Integer getCapacity() {
         return capacity;
+    }
+
+    public ParkingBoy getParkingBoy() {
+        return parkingBoy;
+    }
+
+    public void setParkingBoy(ParkingBoy parkingBoy) {
+        this.parkingBoy = parkingBoy;
     }
 
     protected ParkingLot() {}
