@@ -27,6 +27,9 @@ public class ParkingBoyResource {
 
     @PostMapping
     public ResponseEntity create(@RequestBody CreateParkingBoyRequest request) {
+        if (!request.isValid()) {
+            return ResponseEntity.badRequest().build();
+        }
         parkingBoyRepository.saveAndFlush(new ParkingBoy(request.getEmployeeId()));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

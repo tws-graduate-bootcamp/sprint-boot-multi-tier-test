@@ -90,4 +90,12 @@ public class SampleWebAppApplicationTests {
         mvc.perform(post("/parkingboys"))
             .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void should_get_400_if_employee_id_is_not_provided() throws Exception {
+        mvc.perform(post("/parkingboys")
+            .content("{\"employeeId\": null}")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }
