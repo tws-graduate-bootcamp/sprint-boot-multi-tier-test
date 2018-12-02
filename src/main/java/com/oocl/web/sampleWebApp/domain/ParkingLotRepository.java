@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ParkingLotRepository extends JpaRepository<ParkingLot, Long> {
     List<ParkingLot> findAllByParkingBoy(ParkingBoy parkingBoy);
+    ParkingLot findOneByParkingLotId(String parkingLotId);
 }

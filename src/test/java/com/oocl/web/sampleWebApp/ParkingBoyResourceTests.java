@@ -3,10 +3,7 @@ package com.oocl.web.sampleWebApp;
 import com.oocl.web.sampleWebApp.domain.ParkingBoy;
 import com.oocl.web.sampleWebApp.domain.ParkingBoyRepository;
 import com.oocl.web.sampleWebApp.domain.ParkingLot;
-import com.oocl.web.sampleWebApp.models.CreateParkingBoyRequest;
-import com.oocl.web.sampleWebApp.models.ParkingBoyResponse;
-import com.oocl.web.sampleWebApp.models.ParkingBoyWithParkingLotResponse;
-import com.oocl.web.sampleWebApp.models.ParkingLotResponse;
+import com.oocl.web.sampleWebApp.models.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,13 +161,34 @@ public class ParkingBoyResourceTests {
         assertEquals("e01", response.getEmployeeId());
         List<ParkingLotResponse> parkingLots = response.getParkingLots();
         assertEquals(2, parkingLots.size());
-        assertTrue(parkingLots.stream().anyMatch(pl -> pl.getParkingLotId().equals("p01")));
-        assertTrue(parkingLots.stream().anyMatch(pl -> pl.getParkingLotId().equals("p02")));
+        assertTrue(parkingLots.stream().anyMatch(pl -> pl.getParkingLotId().equals("p01") && pl.getCapacity() == 2));
+        assertTrue(parkingLots.stream().anyMatch(pl -> pl.getParkingLotId().equals("p02") && pl.getCapacity() == 3));
     }
 
     @Test
     public void should_get_404_when_parking_boy_not_exist_when_get_parking_boy_with_parking_lots() throws Exception {
         mvc.perform(get("/parkingboys/not-exist-id"))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void should_associate_parking_boy_with_parking_lot() throws Exception {
+	    // Given
+        final ParkingBoy employee = new ParkingBoy("e01");
+        final ParkingLot p01 = new ParkingLot("p01", 2);
+        entityManager.persist(employee);
+        entityManager.persist(p01);
+
+        AssociateParkingBoyParkingLotRequest request = AssociateParkingBoyParkingLotRequest.create("p01");
+
+        // When
+        mvc.perform(post("/parkingboys/e01/parkinglots")
+            .content(toJsonString(request)).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
+
+        // Then
+        final ParkingBoyWithParkingLotResponse parkingBoyWithParkingLots = getContentAsObject(
+            mvc.perform(get("/parkingboys/e01")).andReturn(), ParkingBoyWithParkingLotResponse.class);
+        assertEquals("p01", parkingBoyWithParkingLots.getParkingLots().get(0).getParkingLotId());
     }
 }

@@ -4,10 +4,7 @@ import com.oocl.web.sampleWebApp.domain.ParkingBoy;
 import com.oocl.web.sampleWebApp.domain.ParkingBoyRepository;
 import com.oocl.web.sampleWebApp.domain.ParkingLot;
 import com.oocl.web.sampleWebApp.domain.ParkingLotRepository;
-import com.oocl.web.sampleWebApp.models.CreateParkingBoyRequest;
-import com.oocl.web.sampleWebApp.models.ParkingBoyResponse;
-import com.oocl.web.sampleWebApp.models.ParkingBoyWithParkingLotResponse;
-import com.oocl.web.sampleWebApp.models.ParkingLotResponse;
+import com.oocl.web.sampleWebApp.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -63,6 +60,17 @@ public class ParkingBoyResource {
                 ParkingLotResponse.create(pl.getParkingLotId(), pl.getCapacity())).collect(Collectors.toList())
         );
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{employeeId}/parkinglots")
+    public ResponseEntity associateParkingBoyWithParkingLot(
+        @PathVariable String employeeId,
+        @RequestBody AssociateParkingBoyParkingLotRequest request) {
+        final ParkingBoy parkingBoy = parkingBoyRepository.findOneByEmployeeId(employeeId);
+        final ParkingLot parkingLot = parkingLotRepository.findOneByParkingLotId(request.getParkingLotId());
+        parkingLot.setParkingBoy(parkingBoy);
+        parkingLotRepository.saveAndFlush(parkingLot);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
 
