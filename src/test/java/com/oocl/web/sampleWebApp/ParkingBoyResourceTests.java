@@ -1,6 +1,5 @@
 package com.oocl.web.sampleWebApp;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.oocl.web.sampleWebApp.domain.ParkingBoy;
 import com.oocl.web.sampleWebApp.domain.ParkingBoyRepository;
 import com.oocl.web.sampleWebApp.models.CreateParkingBoyRequest;
@@ -8,7 +7,6 @@ import com.oocl.web.sampleWebApp.models.ParkingBoyResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -16,14 +14,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import javax.persistence.EntityManager;
 
 import static com.oocl.web.sampleWebApp.WebTestUtil.getContentAsObject;
 import static com.oocl.web.sampleWebApp.WebTestUtil.toJsonString;
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -33,6 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ParkingBoyResourceTests {
     @Autowired
     private ParkingBoyRepository parkingBoyRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     private MockMvc mvc;
