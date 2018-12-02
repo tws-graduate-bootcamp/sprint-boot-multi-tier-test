@@ -4,6 +4,7 @@ import java.util.Objects;
 
 public class CreateParkingBoyRequest {
     private String employeeId;
+    private static final int MAX_EMPLOYEE_ID_LENGTH = 64;
 
     public String getEmployeeId() {
         return employeeId;
@@ -18,6 +19,6 @@ public class CreateParkingBoyRequest {
     }
 
     public boolean isValid() {
-        return employeeId != null && !employeeId.isEmpty();
+        return employeeId != null && !employeeId.isEmpty() && employeeId.length() <= MAX_EMPLOYEE_ID_LENGTH;
     }
 }

@@ -106,4 +106,14 @@ public class SampleWebAppApplicationTests {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void should_get_400_if_employee_id_is_too_long() throws Exception {
+	    final String longEmployeeId = "0123456789012345678901234567890123456789012345678901234567890123456789";
+
+        mvc.perform(post("/parkingboys")
+            .content(String.format("{\"employeeId\": \"%s\"}", longEmployeeId))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }
