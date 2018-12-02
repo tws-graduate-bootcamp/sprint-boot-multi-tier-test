@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.oocl.web.sampleWebApp.controllers.ResponseUtils.createStatusCodeResponse;
+
 @RestController
 @RequestMapping("/parkinglots")
 public class ParkingLotResource {
@@ -36,6 +38,6 @@ public class ParkingLotResource {
 
         final ParkingLot parkingLot = new ParkingLot(request.getParkingLotId(), request.getCapacity());
         parkingLotRepository.saveAndFlush(parkingLot);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return createStatusCodeResponse(HttpStatus.CREATED);
     }
 }

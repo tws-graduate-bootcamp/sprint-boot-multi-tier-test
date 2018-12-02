@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.oocl.web.sampleWebApp.controllers.ResponseUtils.createStatusCodeResponse;
+
 @RestController
 @RequestMapping("/parkingboys")
 public class ParkingBoyResource {
@@ -36,14 +38,14 @@ public class ParkingBoyResource {
     @PostMapping
     public ResponseEntity create(@RequestBody CreateParkingBoyRequest request) {
         if (!request.isValid()) {
-            return ResponseEntity.badRequest().build();
+            return createStatusCodeResponse(HttpStatus.BAD_REQUEST);
         }
 
         try {
             parkingBoyRepository.saveAndFlush(new ParkingBoy(request.getEmployeeId()));
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return createStatusCodeResponse(HttpStatus.CREATED);
         } catch (DataIntegrityViolationException error) {
-            return ResponseEntity.badRequest().build();
+            return createStatusCodeResponse(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -67,17 +69,19 @@ public class ParkingBoyResource {
         @PathVariable String employeeId,
         @RequestBody AssociateParkingBoyParkingLotRequest request) {
         if (!request.isValid()) {
-            return ResponseEntity.badRequest().build();
+            return createStatusCodeResponse(HttpStatus.BAD_REQUEST);
         }
         final ParkingBoy parkingBoy = parkingBoyRepository.findOneByEmployeeId(employeeId);
         if (parkingBoy == null) {
-            return ResponseEntity.badRequest().build();
+            return createStatusCodeResponse(HttpStatus.BAD_REQUEST);
         }
 
         final ParkingLot parkingLot = parkingLotRepository.findOneByParkingLotId(request.getParkingLotId());
+        if (parkingLot.getParkingBoy() != null) {
+            return createStatusCodeResponse(HttpStatus.CONFLICT);
+        }
         parkingLot.setParkingBoy(parkingBoy);
         parkingLotRepository.saveAndFlush(parkingLot);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return createStatusCodeResponse(HttpStatus.CREATED);
     }
 }
-

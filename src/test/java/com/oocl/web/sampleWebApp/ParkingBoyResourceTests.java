@@ -1,6 +1,5 @@
 package com.oocl.web.sampleWebApp;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.oocl.web.sampleWebApp.domain.ParkingBoy;
 import com.oocl.web.sampleWebApp.domain.ParkingBoyRepository;
 import com.oocl.web.sampleWebApp.domain.ParkingLot;
@@ -18,7 +17,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-
 import java.util.List;
 
 import static com.oocl.web.sampleWebApp.WebTestUtil.getContentAsObject;
@@ -230,8 +228,26 @@ public class ParkingBoyResourceTests {
         AssociateParkingBoyParkingLotRequest request = AssociateParkingBoyParkingLotRequest.create("p01");
 
         // When
-        mvc.perform(post("/parkingboys/e02/parkinglots")
+        mvc.perform(post("/parkingboys/not_exist_id/parkinglots")
             .content(toJsonString(request)).contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void should_get_409_if_parking_lot_has_been_associated() throws Exception {
+        // Given
+        final ParkingBoy employee = new ParkingBoy("e01");
+        final ParkingBoy anotherEmployee = new ParkingBoy("e02");
+        final ParkingLot p01 = new ParkingLot("p01", 2);
+        p01.setParkingBoy(employee);
+        entityManager.persist(p01);
+        entityManager.persist(anotherEmployee);
+        entityManager.flush();
+
+        // When
+        AssociateParkingBoyParkingLotRequest request = AssociateParkingBoyParkingLotRequest.create("p01");
+        mvc.perform(post("/parkingboys/e02/parkinglots")
+            .content(toJsonString(request)).contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isConflict());
     }
 }
