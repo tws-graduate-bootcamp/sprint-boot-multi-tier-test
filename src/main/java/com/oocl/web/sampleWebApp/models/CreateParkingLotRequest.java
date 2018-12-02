@@ -18,4 +18,8 @@ public class CreateParkingLotRequest {
         request.capacity = capacity;
         return request;
     }
+
+    public boolean isValid() {
+        return parkingLotId != null;
+    }
 }

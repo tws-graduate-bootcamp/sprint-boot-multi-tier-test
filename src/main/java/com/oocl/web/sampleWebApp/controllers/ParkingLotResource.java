@@ -30,6 +30,10 @@ public class ParkingLotResource {
 
     @PostMapping
     public ResponseEntity create(@RequestBody CreateParkingLotRequest request) {
+        if (!request.isValid()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         final ParkingLot parkingLot = new ParkingLot(request.getParkingLotId(), request.getCapacity());
         parkingLotRepository.saveAndFlush(parkingLot);
         return ResponseEntity.status(HttpStatus.CREATED).build();

@@ -86,4 +86,20 @@ public class ParkingLotResourceTests {
         assertEquals(10, allParkingLots[0].getCapacity());
         assertEquals("p01", allParkingLots[0].getParkingLotId());
     }
+
+    @Test
+    public void should_get_400_if_null_is_provided_when_creating_parking_lot() throws Exception {
+        mvc.perform(
+            post("/parkinglots"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void should_get_400_if_parking_lot_id_is_not_provided() throws Exception {
+        mvc.perform(
+            post("/parkinglots")
+                .content("{\"capacity\":10}")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }
