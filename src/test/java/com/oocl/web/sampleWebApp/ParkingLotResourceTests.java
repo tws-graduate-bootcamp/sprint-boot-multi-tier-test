@@ -120,4 +120,13 @@ public class ParkingLotResourceTests {
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void should_get_400_if_parking_lot_capacity_is_less_than_zero() throws Exception {
+        mvc.perform(
+            post("/parkinglots")
+                .content("{\"parkingLotId\":\"p01\",\"capacity\":-1}")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
 }
